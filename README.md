@@ -1,7 +1,3 @@
-Ecco una struttura di base per il file README del tuo progetto HTML:
-
----
-
 # Shopping Cart
 
 ## Descrizione
