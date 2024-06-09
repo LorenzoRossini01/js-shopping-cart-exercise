@@ -1,3 +1,4 @@
+// definizione array dei prodotti
 const products = [
   {
     img: "https://add-to-cart-javascript.vercel.app/img/men-1.jpg",
@@ -85,31 +86,36 @@ const products = [
   },
 ];
 
+// modulo per la gestione del carrello degli acquisti
 let shoppingCart = (function () {
+  // variabile per memorizzare gli elementi del carrello
   cart = [];
 
+  //   costruttore per rappresentare un elemento del carrello
   function Item(name, price, count) {
     this.name = name;
     this.price = price;
     this.count = count;
   }
 
-  // Save cart
+  // Funzione per salvare il carrello nell'archiviazione locale
   function saveCart() {
     localStorage.setItem("shoppingCart", JSON.stringify(cart));
   }
 
-  // Load cart
+  // Funzione per caricare il carrello dall'archiviazione locale
   function loadCart() {
     cart = JSON.parse(localStorage.getItem("shoppingCart"));
   }
+
+  // Controllo se il carrello è già stato salvato nell'archiviazione locale
   if (localStorage.getItem("shoppingCart") != null) {
     loadCart();
   }
 
   let obj = {};
 
-  // Add to cart
+  // Funzione per aggiungere un elemento al carrello
   obj.addItemToCart = function (name, price, count) {
     for (let item in cart) {
       if (cart[item].name === name) {
@@ -122,7 +128,7 @@ let shoppingCart = (function () {
     cart.push(item);
     saveCart();
   };
-  // Set count from item
+  // Funzione per impostare la quantità di un elemento nel carrello
   obj.setCountForItem = function (name, count) {
     for (let i in cart) {
       if (cart[i].name === name) {
@@ -131,7 +137,7 @@ let shoppingCart = (function () {
       }
     }
   };
-  // Remove item from cart
+  // Funzione per rimuovere un elemento dal carrello
   obj.removeItemFromCart = function (name) {
     for (let item in cart) {
       if (cart[item].name === name) {
@@ -145,7 +151,7 @@ let shoppingCart = (function () {
     saveCart();
   };
 
-  // Remove all items from cart
+  // Funzione per rimuovere tutti gli elementi di un tipo dal carrello
   obj.removeItemFromCartAll = function (name) {
     for (let item in cart) {
       if (cart[item].name === name) {
@@ -156,13 +162,14 @@ let shoppingCart = (function () {
     saveCart();
   };
 
-  // Clear cart
+  // Funzione per svuotare completamente il carrello
+
   obj.clearCart = function () {
     cart = [];
     saveCart();
   };
 
-  // Count cart
+  // Funzione per calcolare il numero totale di elementi nel carrello
   obj.totalCount = function () {
     let totalCount = 0;
     for (let item in cart) {
@@ -171,7 +178,7 @@ let shoppingCart = (function () {
     return totalCount;
   };
 
-  // Total cart
+  // Funzione per calcolare il totale del carrello
   obj.totalCart = function () {
     let totalCart = 0;
     for (let item in cart) {
@@ -180,7 +187,7 @@ let shoppingCart = (function () {
     return Number(totalCart.toFixed(2));
   };
 
-  // List cart
+  // Funzione per ottenere una copia del carrello
   obj.listCart = function () {
     let cartCopy = [];
     for (i in cart) {
@@ -197,11 +204,13 @@ let shoppingCart = (function () {
   return obj;
 })();
 
+// Selezione degli elementi HTML
 let AllList = document.querySelector("#all-list");
 let ManList = document.querySelector("#man-products");
 let WomanList = document.querySelector("#woman-products");
 let WatchList = document.querySelector("#watch-products");
 
+// Filtraggio dei prodotti per categoria
 let maleProduct = products.filter(
   (product) => product.category === "man-products"
 );
@@ -212,6 +221,7 @@ let watchProduct = products.filter(
   (product) => product.category === "watch-products"
 );
 
+// Funzione per generare le card dei prodotti
 function generateProductCard(array, where) {
   array.forEach((product) => {
     where.innerHTML += `
@@ -250,12 +260,13 @@ function generateProductCard(array, where) {
   });
 }
 
+// Generazione delle card dei prodotti
 generateProductCard(products, AllList);
 generateProductCard(maleProduct, ManList);
 generateProductCard(femaleProduct, WomanList);
 generateProductCard(watchProduct, WatchList);
 
-// Add item
+// Gestione dell'evento click per aggiungere un elemento al carrello
 $(".default-btn").click(function (event) {
   //   alert("working");
   event.preventDefault();
@@ -265,12 +276,13 @@ $(".default-btn").click(function (event) {
   displayCart();
 });
 
-// Clear items
+// Gestione dell'evento click per svuotare il carrello
 $("#clearCartButton").click(function () {
   shoppingCart.clearCart();
   displayCart();
 });
 
+// Funzione per visualizzare il contenuto del carrello
 function displayCart() {
   let cartArray = shoppingCart.listCart();
   let output = "";
@@ -304,36 +316,45 @@ function displayCart() {
   $(".total-count").html(shoppingCart.totalCount());
 }
 
-// Delete item button
-
+// Gestione dell'evento click per rimuovere un elemento dal carrello
 $(".show-cart").on("click", ".delete-item", function (event) {
   let name = $(this).data("name");
   shoppingCart.removeItemFromCartAll(name);
   displayCart();
 });
 
-// Item count input
+// Gestione dell'evento change per modificare la quantità di un elemento nel carrello
 $(".show-cart").on("change", ".item-count", function (event) {
   let name = $(this).data("name");
   let count = Number($(this).val());
   shoppingCart.setCountForItem(name, count);
   displayCart();
 });
+
+// Visualizzazione iniziale del carrello
 displayCart();
 
-//////// ui script start /////////
-// Tabs Single Page
+// Aggiunge la classe 'active' al primo elemento della lista delle tab e la classe 'current' al suo primo elemento figlio
 $(".tab ul.tabs").addClass("active").find("> li:eq(0)").addClass("current");
+
+// Gestisce l'evento click sui link delle tab
 $(".tab ul.tabs li a").on("click", function (g) {
+  // Ricerca l'elemento .tab più vicino al link cliccato e ottiene l'indice della tab attiva
   let tab = $(this).closest(".tab"),
     index = $(this).closest("li").index();
+
+  // Rimuove la classe 'current' da tutte le tab e la aggiunge solo a quella cliccata
   tab.find("ul.tabs > li").removeClass("current");
   $(this).closest("li").addClass("current");
+
+  // Nasconde tutti i contenuti delle tab tranne quello corrispondente alla tab cliccata
   tab
     .find(".tab_content")
     .find("div.tabs_item")
     .not("div.tabs_item:eq(" + index + ")")
     .slideUp();
+
+  // Evita l'azione predefinita del click sul link
   tab
     .find(".tab_content")
     .find("div.tabs_item:eq(" + index + ")")
@@ -341,25 +362,39 @@ $(".tab ul.tabs li a").on("click", function (g) {
   g.preventDefault();
 });
 
-// search function
+// Funzione di ricerca
 $("#search_field").on("keyup", function () {
+  // Ottiene il valore inserito nell'input di ricerca
   let value = $(this).val();
+
+  // Crea un'espressione regolare per effettuare la ricerca ignorando la distinzione tra maiuscole e minuscole
   let patt = new RegExp(value, "i");
 
+  // Variabile per tenere traccia se sono stati trovati corrispondenze
+  let found = false;
+
+  // Itera su tutti gli elementi con la classe .col-lg-3 all'interno delle tab_content
   $(".tab_content")
     .find(".col-lg-3")
     .each(function () {
       let $table = $(this);
 
-      if (!($table.find(".featured-item").text().search(patt) >= 0)) {
-        $table.not(".featured-item").hide();
-      }
-      if ($table.find(".col-lg-3").text().search(patt) >= 0) {
-        $(this).show();
-        document.getElementById("not_found").style.display = "none";
+      // Verifica se il testo del prodotto corrente corrisponde alla ricerca
+      if ($table.find(".featured-item").text().search(patt) >= 0) {
+        // Se c'è una corrispondenza, mostra l'elemento e imposta la variabile found a true
+        $table.show();
+        found = true;
       } else {
-        document.getElementById("not_found").innerHTML = " Product not found..";
-        document.getElementById("not_found").style.display = "block";
+        // Altrimenti, nasconde l'elemento
+        $table.hide();
       }
     });
+
+  // Se sono state trovate corrispondenze, nasconde il messaggio "Product not found", altrimenti lo mostra
+  if (found) {
+    document.getElementById("not_found").style.display = "none";
+  } else {
+    document.getElementById("not_found").style.display = "block";
+    document.getElementById("not_found").innerHTML = " Product not found..";
+  }
 });
